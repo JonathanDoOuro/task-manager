@@ -13,6 +13,8 @@
     "strictFunctionTypes": true,
     "noUnusedLocals": true,
     "strictPropertyInitialization": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
   },
   "include": [
     "src/**/*.ts",
