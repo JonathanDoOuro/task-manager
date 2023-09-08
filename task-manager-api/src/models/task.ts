@@ -1,12 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { Status } from "./status";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Status } from "./enums/status";
 
-@Entity()
+@Entity("task")
 export class Task {
     
     @PrimaryGeneratedColumn()
-    
-    @Column()
     id: Number;
 
     @Column()
@@ -20,5 +18,8 @@ export class Task {
         enum: Status,
         default: Status.aFazer,
     })
-    status: Status
+    status: Status;
+
+    @CreateDateColumn({ type: 'timestamp' })  
+    date: Date;
 }
