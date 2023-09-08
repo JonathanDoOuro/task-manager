@@ -1,4 +1,5 @@
 import { DataSource } from "typeorm"
+import { Task } from "../models/task";
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -9,7 +10,7 @@ export const myDataSource = new DataSource({
     username: 'postgres',
     password: 'password',
     database: "postgres",
-    entities: ["src/model/*.ts"],
+    entities: [Task],
     logging: true,
     synchronize: true,
 })
