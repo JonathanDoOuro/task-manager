@@ -5,18 +5,18 @@ import { Status } from "./enums/status";
 export class Task {
     
     @PrimaryGeneratedColumn()
-    id: Number;
+    id: number;
 
     @Column()
-    name: String;
+    name: string;
 
     @Column()
-    description: String;
+    description: string;
 
     @Column({
         type: "enum",
         enum: Status,
-        default: Status.aFazer,
+        default: Status.naoIniciada,
     })
     status: Status;
 

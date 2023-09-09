@@ -1,6 +1,6 @@
 interface TaskDTO {
-    name: String,
-    description: String,
-    status: String,
-    date: String,
+    name: string,
+    description: string,
+    status: string,
+    date: string,
 }
