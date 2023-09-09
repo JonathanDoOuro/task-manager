@@ -7,6 +7,8 @@ export class TasksRoute {
 
     constructor() {
         this.router.post("/task", this.taskController.createTask)
-        this.router.get("/tasks/:status", this.taskController.listTasksByStatus)
+        this.router.get("/task/:status", this.taskController.listTasksByStatus)
+        this.router.delete("/task/:id", this.taskController.deleteTask)
+        this.router.put("/task/:id", this.taskController.updateTask)
     }
 }
