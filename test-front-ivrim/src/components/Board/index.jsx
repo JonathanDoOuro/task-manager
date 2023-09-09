@@ -9,9 +9,12 @@ import List from '../List';
 
 import { Container } from './styles';
 
-const data = loadLists();
+import TaskService from '../../services/taskService';
+
+const data = loadLists()//await TaskService.loadColuns();
 
 export default function Board() {
+  console.log(data)
   const [lists, setLists] = useState(data);
 
   function move(fromList, toList, from, to) {
