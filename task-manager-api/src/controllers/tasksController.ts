@@ -24,7 +24,7 @@ export class TasksController {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173')
         console.log("recebi requisição para atualizar uma tarefa")
         try {
-            let task: TaskDTO = await this.taskService.update(req.body, Number(req.params.id));
+            let task = await this.taskService.update(req.body, Number(req.params.id));
             res.status(200).json(task);
         } catch(error: any) {
             res.status(400).json(error.message);
@@ -39,7 +39,7 @@ export class TasksController {
             let tarefaDeletada: TaskDTO = await this.taskService.delete(id);
             res.status(200).json(tarefaDeletada)
         } catch(error: any) {
-            res.status(400).json(error.message);
+            res.status(400).json(error);
         }
     }
 

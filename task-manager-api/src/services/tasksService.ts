@@ -21,9 +21,10 @@ export class TasksService {
         let task: Task | null = await this.taskRepository.findOneBy({
             id: id
         })
-
+        console.log("task:", task, "id:", id)
         if(task != null) {
             await this.taskRepository.remove(task);
+            task.id = id;
             return this.getDTOfromTask(task);
         }else {
             throw new Error(`Tarefa com 'id: ${id}' não existe`);
@@ -43,7 +44,9 @@ export class TasksService {
                 date: task.date,
                 status: Status[task.status as keyof typeof Status]
             })
-            return task
+            return {...task,
+                    id: id,
+                    date: task.date.toString()}
         }else {
             throw new Error(`Tarefa com 'id: ${id}' não existe`);
         }
@@ -71,8 +74,9 @@ export class TasksService {
     private getDTOfromTask(task: Task): TaskDTO {
         let taskDto: TaskDTO = {
             ...task,
+            id: String(task.id),
             status: task.status.toString(),
-            date: task.date.toString()
+            date: task.date
         }
         return taskDto
     }
@@ -82,7 +86,6 @@ export class TasksService {
             throw new MustHaveAllFields("date must not be null");
         }
         if(task.description == null) {
-            console.log("aqui", task)
             throw new MustHaveAllFields("description must not be null");
         }
         if(task.name == null) {
