@@ -37,7 +37,7 @@ export class TasksService {
         let taskRetrived: Task | null = await this.taskRepository.findOneBy({
             id: id
         })
-        if(taskRetrived != null){
+        if(taskRetrived !== null){
             await this.taskRepository.update(id, {
                 name: task.name,
                 description: task.description,
@@ -45,8 +45,8 @@ export class TasksService {
                 status: Status[task.status as keyof typeof Status]
             })
             return {...task,
-                    id: id,
-                    date: task.date.toString()}
+                    id: id.toString(),
+                    date: task.date}
         }else {
             throw new Error(`Tarefa com 'id: ${id}' não existe`);
         }
@@ -82,17 +82,17 @@ export class TasksService {
     }
 
     private validateTask(task: TaskDTO) {
-        if(task.date == null) {
-            throw new MustHaveAllFields("date must not be null");
+        if(task.date === null) {
+            throw new MustHaveAllFields("'date' não pode ser null");
         }
-        if(task.description == null) {
-            throw new MustHaveAllFields("description must not be null");
+        if(task.description === null) {
+            throw new MustHaveAllFields("'description' não pode ser null");
         }
-        if(task.name == null) {
-            throw new MustHaveAllFields("name must not be null");
+        if(task.name === null) {
+            throw new MustHaveAllFields("'name' não pode ser null");
         }
-        if(task.status == null || !(task.status in Status) ) {
-            throw new MustHaveAllFields("status must not be null ['naoIniciada','aFazer', 'fazendo', 'feito']");
+        if(task.status === null || !(task.status in Status) ) {
+            throw new MustHaveAllFields("'status' não pode ser null. Opções validas: ['naoIniciada','aFazer', 'fazendo', 'feito']");
         }
     }
 

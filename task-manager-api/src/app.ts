@@ -2,7 +2,7 @@ import express from 'express';
 import { router } from './router';
 import dotenv from 'dotenv';
 import { myDataSource } from './db/app-data-source';
-var cors = require('cors')
+import cors from 'cors';
 dotenv.config();
 
 myDataSource

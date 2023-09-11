@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "tsc",
     "dev": "tsnd --transpile-only --respawn --ignore-watch node_modules src/server.ts",
-    "test": "jest"
+    "test": "NODE_ENV=test jest"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +27,7 @@
     "typescript": "^5.2.2"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.14",
     "@types/node": "^20.5.9"
   }
 }
