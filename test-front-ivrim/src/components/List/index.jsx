@@ -1,21 +1,29 @@
 import React from 'react';
 
-import { MdAdd } from 'react-icons/md';
-
 import Card from '../Card';
 import Fake from '../Card/fake';
-
+import ButtonWithForm from '../createForm/ButtonWithForm';
 import { Container } from './styles';
+import TaskService from '../../services/taskService';
 
-export default function List({ data, index: listIndex }) {
+export default function List({ data, index: listIndex, updateCards, cardUpdated }) {
+  const addTaskToCards = (newTask) => {
+    updateCards(newTask);
+  }
+
+  const movedComplete = async (card, item) => {
+    await TaskService.updateColun(card, card.id, item.listIndex)
+    //cardUpdated()
+  }
+
   return (
     <Container done={data.done}>
       <header>
         <h2>{data.title}</h2>
         {data.creatable && (
-          <button type="button">
-            <MdAdd size={24} color="#FFF" />
-          </button>
+          <>
+            <ButtonWithForm addTaskToCards={addTaskToCards} ></ButtonWithForm>
+          </>      
         )}
       </header>
 
@@ -26,6 +34,8 @@ export default function List({ data, index: listIndex }) {
       }}>
         {data.cards.map((card, index) => (
           <Card 
+            onMoveEnd={movedComplete}
+            cardUpdated={cardUpdated}
             key={card.id} 
             listIndex={listIndex}
             index={index} 
