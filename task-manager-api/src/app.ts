@@ -8,10 +8,10 @@ dotenv.config();
 myDataSource
     .initialize()
     .then(() => {
-        console.log("Data Source has been initialized!")
+        console.log("Data Source inicializado")
     })
     .catch((err: any) => {
-        console.error("Error during Data Source initialization:", err)
+        console.error("Erro durante inicialização:", err)
     })
 
 const app = express();

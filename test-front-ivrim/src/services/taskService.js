@@ -1,6 +1,6 @@
 const TaskService = {
    
-    baseUrl: " http://localhost:3000" + "/task",
+    baseUrl: "http://localhost:3000" + "/task",
 
     listTasksByStatus: async (endpoint) => {
         try {
