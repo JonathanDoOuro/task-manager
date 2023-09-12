@@ -5,12 +5,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const myTestDataSource = new DataSource({
-    port: 5000,
     type: "postgres",
-    host: "postgresTest",
+    host: "localhost",
     username: "postgres",
     password: "password",
-    database: "postgres",
+    database: "db_test",
     entities: [Task],
     logging: true,
     synchronize: true,

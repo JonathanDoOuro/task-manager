@@ -11,18 +11,6 @@ services:
       - "5432:5432"
     restart: always
 
-  postgrestest:
-    env_file:
-      - .env
-    container_name: postgresTest
-    image: postgres:latest
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-    ports:
-      - "5000:5000"
-    restart: always
-
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4:latest

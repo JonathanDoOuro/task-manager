@@ -1,7 +1,7 @@
 import { TasksService,  } from "../services/tasksService"
 import { DataSource } from 'typeorm';
-//import { myTestDataSource } from "./test_db/testHelper";
 import { myDataSource } from "../db/app-data-source";
+import { MustHaveAllFields } from "../exceptions/mustHaveFields";
 
 let taskService: TasksService;
 
@@ -28,19 +28,57 @@ const valideInputTask = {
   status: "aFazer"
 };
 
-const expectedTaskOutput = {
+const invalideInputTask = {
   id: "1",
   name: "tarefa tttttt",
-  description: "Tarefa simples",
+  description: "undefined",
   date: new Date(),
-  status: "aFazer",
+  status: "completo"
+};
+
+const updatedInputTask = {
+  id: "1",
+  name: "tarefa atualizada",
+  description: "A é uma tarefa atualizada",
+  date: new Date(),
+  status: "feito",
 };
 
 describe("TaskService", ()=> {
-  describe("Create a Task", ()=> {
+  describe("Criar uma tarefa", ()=> {
     it("should return a Task with an Id", async () => {
-      let response = await taskService.create(valideInputTask);
-      expect(response).toEqual(expectedTaskOutput);
-    })
+      const response = await taskService.create(valideInputTask);
+      expect(response).toHaveProperty("id");
+      expect(response.name).toBe(valideInputTask.name);
+    });
+
+    it("deverialançar uma exceção", async () => {
+      try {
+        await taskService.create(invalideInputTask);
+      } catch (error: any) {
+        expect(error).toBeInstanceOf(MustHaveAllFields);
+      }
+    });
   })
+
+  describe("Atualizar uma tarefa", () => {
+    it("Deveria atualizar a tarefa e retornar ela", async () => {
+      const createdTask = await taskService.create(valideInputTask);
+      const updatedTask = await taskService.update(updatedInputTask, parseInt(createdTask.id));
+      expect(updatedTask).toHaveProperty("id");
+      expect(updatedTask.name).toBe(updatedInputTask.name);
+      expect(updatedTask.description).toBe(updatedInputTask.description);
+      expect(updatedTask.status).toBe(updatedInputTask.status);
+    });
+
+    it("deveria lançar uma exceção ao atualizar uma tarefa que não existe", async () => {
+      try {
+        await taskService.update(updatedInputTask, 90);
+      } catch (error: any) {
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toContain("Tarefa com 'id: 90' não existe");
+      }
+    });
+  });
+
 })
