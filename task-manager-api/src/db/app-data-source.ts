@@ -7,8 +7,8 @@ dotenv.config();
 export const myDataSource = new DataSource({
     type: "postgres",
     host: "localhost",
-    username: 'postgres',
-    password: 'password',
+    username: String(process.env.USER_NAME),
+    password: String(process.env.PASSWORD),
     database: "postgres",
     entities: [Task],
     logging: true,

@@ -9,11 +9,17 @@ import List from '../List';
 
 import { Container } from './styles';
 
-const data = loadLists();
+import TaskService from '../../services/taskService';
+
+const data = await TaskService.loadColuns();
 
 export default function Board() {
   const [lists, setLists] = useState(data);
 
+  async function cardUpdated() {
+    setLists(await TaskService.loadColuns());
+  }
+  
   function move(fromList, toList, from, to) {
     setLists(produce(lists, draft => {
       const dragged = draft[fromList].cards[from];
@@ -27,7 +33,12 @@ export default function Board() {
   return (
     <BoardContext.Provider value={{ lists, move }}>
       <Container>
-        {lists.map((list, index) => <List key={list.title} index={index} data={list} />)}
+        {lists.map((list, index) => <List 
+                                    cardUpdated={cardUpdated} 
+                                    key={list.title} 
+                                    index={index} 
+                                    data={list} 
+                                    updateCards={cardUpdated} />)}
       </Container>
     </BoardContext.Provider>
   );

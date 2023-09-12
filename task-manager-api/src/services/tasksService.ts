@@ -2,6 +2,7 @@ import { Task } from "../models/task";
 import { myDataSource } from "../db/app-data-source";
 import { Repository } from "typeorm";
 import { Status } from "../models/enums/status";
+import { MustHaveAllFields } from "../exceptions/mustHaveFields";
 
 export class TasksService {
     taskRepository: Repository<Task>;
@@ -10,31 +11,61 @@ export class TasksService {
         this.taskRepository = myDataSource.getRepository(Task);
     }
 
-    create = async (task: Task) => {
-        let novaTarefa = await this.taskRepository.save(this.jsonToTask(task));
+    create = async (task: TaskDTO) => {
+        this.validateTask(task);
+        let novaTarefa = await this.taskRepository.save(this.dtoToTask(task));
         return this.getDTOfromTask(novaTarefa);
     }
 
+    delete = async (id: number) => {
+        let task: Task | null = await this.taskRepository.findOneBy({
+            id: id
+        })
+        console.log("task:", task, "id:", id)
+        if(task != null) {
+            await this.taskRepository.remove(task);
+            task.id = id;
+            return this.getDTOfromTask(task);
+        }else {
+            throw new Error(`Tarefa com 'id: ${id}' não existe`);
+        }
+        
+    }
+
+    update = async (task: TaskDTO, id: number) => {
+        this.validateTask(task);
+        let taskRetrived: Task | null = await this.taskRepository.findOneBy({
+            id: id
+        })
+        if(taskRetrived !== null){
+            await this.taskRepository.update(id, {
+                name: task.name,
+                description: task.description,
+                date: task.date,
+                status: Status[task.status as keyof typeof Status]
+            })
+            return {...task,
+                    id: id.toString(),
+                    date: task.date}
+        }else {
+            throw new Error(`Tarefa com 'id: ${id}' não existe`);
+        }
+    }
+
     retriveByStatus = async (status: String): Promise<TaskDTO[]> => {
-        // let tasks = await this.taskRepository.find({
-        //     where: {
-        //         status: Status[status as keyof typeof Status],
-        //     },
-        // })
-        let tasks = await this.taskRepository.find({
+        let tasks: Task[] = await this.taskRepository.find({
             where: {
-                status: undefined,
+                status: Status[status as keyof typeof Status],
             },
         })
-
-        let tasksDto = tasks.map((task) => {
+        
+        let tasksDto: TaskDTO[] = tasks.map((task) => {
             return this.getDTOfromTask(task);
         })
-
         return tasksDto;
     }
 
-    private jsonToTask(body: any): Task {
+    private dtoToTask(body: any): Task {
         let task = body as Task;
         task.status = Status[task.status]
         return task
@@ -43,10 +74,26 @@ export class TasksService {
     private getDTOfromTask(task: Task): TaskDTO {
         let taskDto: TaskDTO = {
             ...task,
+            id: String(task.id),
             status: task.status.toString(),
-            date: task.date.toString()
+            date: task.date
         }
         return taskDto
+    }
+
+    private validateTask(task: TaskDTO) {
+        if(task.date === null) {
+            throw new MustHaveAllFields("'date' não pode ser null");
+        }
+        if(task.description === null) {
+            throw new MustHaveAllFields("'description' não pode ser null");
+        }
+        if(task.name === null) {
+            throw new MustHaveAllFields("'name' não pode ser null");
+        }
+        if(task.status === null || !(task.status in Status) ) {
+            throw new MustHaveAllFields("'status' não pode ser null. Opções validas: ['naoIniciada','aFazer', 'fazendo', 'feito']");
+        }
     }
 
 }

@@ -83,13 +83,13 @@ export function loadLists() {
         },
         {
           id: 12,
-          content: 'Gravar testes e deploy ReactJS',
-          labels: ['#54e1f7'],
+          content: 'Gravar Aula "Internacionalização de aplicações Node.js, ReactJS e React Native"',
+          labels: ['#7159c1'],
         },
         {
           id: 13,
-          content: 'Gravar Aula "Internacionalização de aplicações Node.js, ReactJS e React Native"',
-          labels: ['#7159c1'],
+          content: 'Gravar testes e deploy ReactJS',
+          labels: ['#54e1f7'],
         }
       ]
     },

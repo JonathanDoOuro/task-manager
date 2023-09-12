@@ -1,12 +1,15 @@
-import React, { useRef, useContext } from 'react';
+import React, { useRef, useContext, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-
 import BoardContext from '../Board/context';
-
+import UpdateButton from '../updateForm/updateButton';
 import { Container, Label } from './styles';
+import TaskService from '../../services/taskService';
 
-export default function Card({ data, index, listIndex }) {
+export default function Card({ data, index, listIndex, cardUpdated, onMoveEnd }) {
   const ref = useRef();
+  const [isMoved, setIsMoved] = useState(false);
+  const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false); // Adicione o estado para controlar a exibição da confirmação
+
   const { move } = useContext(BoardContext);
 
   const [{ isDragging }, dragRef] = useDrag({
@@ -14,7 +17,22 @@ export default function Card({ data, index, listIndex }) {
     collect: monitor => ({
       isDragging: monitor.isDragging(),
     }),
+    end: (item, monitor) => {
+      if (monitor.didDrop() && !isMoved) {
+        setIsMoved(true);
+        onMoveEnd(data, item);
+      }
+    },
   });
+
+  async function deleteCard() {
+    if (!isDeleteConfirmationVisible) {
+      setIsDeleteConfirmationVisible(true);
+    } else {
+      await TaskService.deleteTask(Number(data.id));
+      cardUpdated();
+    }
+  }
 
   const [, dropRef] = useDrop({
     accept: 'CARD',
@@ -48,16 +66,20 @@ export default function Card({ data, index, listIndex }) {
       item.index = targetIndex;
       item.listIndex = targetListIndex;
     }
-  })
+  });
 
   dragRef(dropRef(ref));
 
   return (
     <Container ref={ref} isDragging={isDragging}>
       <header>
-        {data.labels.map(label => <Label key={label} color={label} />)}
+        <UpdateButton cardUpdated={cardUpdated} inicialCard={data}></UpdateButton>
+        <button onClick={deleteCard}>
+          {isDeleteConfirmationVisible ? 'Confirmar' : 'Delete'}
+        </button>
       </header>
-      <p>{data.content}</p>
+      <h2>{data.name}</h2>
+      <p>{data.description}</p>
       { data.user && <img src={data.user} alt=""/> }
     </Container>
   );
