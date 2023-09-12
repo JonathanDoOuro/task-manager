@@ -3,7 +3,9 @@ import { TasksService } from '../services/tasksService';
 import { Request, Response } from 'express';
 
 export class TasksController {
-    constructor(private readonly taskService: TasksService) {
+    private readonly taskService: TasksService;
+    
+    constructor() {
         this.taskService = new TasksService();
     }
 
