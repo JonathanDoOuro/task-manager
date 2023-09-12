@@ -2,6 +2,7 @@ import { TasksService,  } from "../services/tasksService"
 import { DataSource } from 'typeorm';
 import { myDataSource } from "../db/app-data-source";
 import { MustHaveAllFields } from "../exceptions/mustHaveFields";
+import { Status } from "../models/enums/status";
 
 let taskService: TasksService;
 
@@ -20,7 +21,7 @@ beforeAll(async (): Promise<DataSource> => {
 
 afterAll(async () => await myDataSource.dropDatabase());
 
-const valideInputTask = {
+const inputTarefaValida = {
   id: "1",
   name: "tarefa tttttt",
   description: "Tarefa simples",
@@ -28,7 +29,7 @@ const valideInputTask = {
   status: "aFazer"
 };
 
-const invalideInputTask = {
+const inputTarefaInvalida = {
   id: "1",
   name: "tarefa tttttt",
   description: "undefined",
@@ -36,7 +37,7 @@ const invalideInputTask = {
   status: "completo"
 };
 
-const updatedInputTask = {
+const inputTarefaUpdate = {
   id: "1",
   name: "tarefa atualizada",
   description: "A é uma tarefa atualizada",
@@ -47,14 +48,14 @@ const updatedInputTask = {
 describe("TaskService", ()=> {
   describe("Criar uma tarefa", ()=> {
     it("should return a Task with an Id", async () => {
-      const response = await taskService.create(valideInputTask);
+      const response = await taskService.create(inputTarefaValida);
       expect(response).toHaveProperty("id");
-      expect(response.name).toBe(valideInputTask.name);
+      expect(response.description).toBe(inputTarefaValida.description);
     });
 
     it("deverialançar uma exceção", async () => {
       try {
-        await taskService.create(invalideInputTask);
+        await taskService.create(inputTarefaInvalida);
       } catch (error: any) {
         expect(error).toBeInstanceOf(MustHaveAllFields);
       }
@@ -63,21 +64,38 @@ describe("TaskService", ()=> {
 
   describe("Atualizar uma tarefa", () => {
     it("Deveria atualizar a tarefa e retornar ela", async () => {
-      const createdTask = await taskService.create(valideInputTask);
-      const updatedTask = await taskService.update(updatedInputTask, parseInt(createdTask.id));
+      const createdTask = await taskService.create(inputTarefaValida);
+      const updatedTask = await taskService.update(inputTarefaUpdate, parseInt(createdTask.id));
       expect(updatedTask).toHaveProperty("id");
-      expect(updatedTask.name).toBe(updatedInputTask.name);
-      expect(updatedTask.description).toBe(updatedInputTask.description);
-      expect(updatedTask.status).toBe(updatedInputTask.status);
+      expect(updatedTask.name).toBe(inputTarefaUpdate.name);
+      expect(updatedTask.description).toBe(inputTarefaUpdate.description);
+      expect(updatedTask.status).toBe(inputTarefaUpdate.status);
     });
 
     it("deveria lançar uma exceção ao atualizar uma tarefa que não existe", async () => {
       try {
-        await taskService.update(updatedInputTask, 90);
+        await taskService.update(inputTarefaUpdate, 90);
       } catch (error: any) {
         expect(error).toBeInstanceOf(Error);
         expect(error.message).toContain("Tarefa com 'id: 90' não existe");
       }
+    });
+  });
+
+  describe("Recuperar tarefas por Status", () => {
+    it("deveria retornar tarefas pelo status passado", async () => {
+      await taskService.create(inputTarefaValida);
+      await taskService.create(inputTarefaUpdate);
+
+      const tasks: TaskDTO[] = await taskService.retriveByStatus("feito");
+
+      expect(tasks.length).toBe(1);
+      expect(tasks[0].status).toBe(Status.feito);
+    });
+
+    it("retorna lista vazia quando não há tarefas com o status passado", async () => {
+      const tasks: TaskDTO[] = await taskService.retriveByStatus("naoIniciada");
+      expect(tasks).toEqual([]);
     });
   });
 
